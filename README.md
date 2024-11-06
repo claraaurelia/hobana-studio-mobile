@@ -271,3 +271,173 @@ Kelas   : PBP C     <br>
 - Sebaliknya, final menetapkan nilai pada saat run-time dan mencegah variabel diubah setelah inisialisasi pertama, tetapi jika variabel tersebut adalah objek, properti di dalamnya tetap bisa diubah.
     - Dalam Flutter, const sering digunakan pada widget statis untuk optimasi memori, karena objek const yang identik hanya dibuat sekali di memori (canonicalized), sementara final digunakan untuk variabel yang nilai akhirnya diketahui pada run-time dan tidak berubah setelahnya.
 </details>
+
+<details>
+<summary> Tugas Individu 8: Flutter Navigation, Layouts, Forms, and Input Elements </summary>
+Nama    : Clara Aurelia Setiady <br>
+NPM     : 2306217304 <br>
+Kelas   : PBP C     <br>
+
+## Proses implementasi Checklist
+### 1. Membuat halaman formulir tambah item baru dengan ketentuan (memakai min tiga elemen input [name, amount, description]), memiliki sebuah tombol Save, setiap element input formulir harus divalidasi [setiap elemen input tidak boleh kosong, setiap elemen input harus berisi data dengan tipe data atribut modelnya, perhatikan juga case-case seperti angkat negatif, dll]
+- Kode mengenai hal ini kebanyakan tercantum di page `productentry_form.dart`. Pada file ini, kode membangun halaman formulir di Flutter untuk menambahkan produk baru dengan tiga elemen input utama: nama produk (_nama), deskripsi produk (_description), dan harga produk (_price). Formulir ini menggunakan widget StatefulWidget bernama ProductEntryFormPage yang memiliki state dikelola oleh kelas _ProductEntryFormPageState. Tujuannya adalah untuk menangani input data produk, memvalidasi input, dan menyimpan data dengan tombol "Save".
+
+Formulir menggunakan GlobalKey<FormState>() sebagai kunci global untuk validasi input pada elemen formulir. Setiap input diwakili oleh TextFormField yang memiliki properti decoration untuk menampilkan label dan hint teks agar pengguna memahami jenis data yang harus dimasukkan. Pada setiap input, terdapat validator yang memastikan data sesuai aturan. Untuk input nama produk, validasi memeriksa apakah input tidak kosong, memiliki panjang minimal 3 karakter, dan maksimal 50 karakter. Pada input deskripsi produk, validasi memeriksa agar input tidak kosong dengan panjang minimal 10 karakter dan maksimal 200 karakter. Sedangkan input harga menggunakan keyboardType: TextInputType.number untuk membatasi input menjadi angka, dan validasi memastikan nilainya tidak kosong, berupa angka, serta lebih besar dari nol.
+
+Pengelolaan state dilakukan menggunakan metode setState() di dalam fungsi onChanged, yang memperbarui nilai variabel state (_nama, _description, dan _price) setiap kali pengguna mengubah input. Hal ini memastikan data yang dimasukkan selalu sinkron dengan state aplikasi.
+
+Tombol "Save" pada formulir dibuat menggunakan ElevatedButton. Ketika tombol ditekan, form divalidasi dengan metode _formKey.currentState!.validate(). Jika semua input valid, maka dialog konfirmasi ditampilkan menggunakan showDialog(). Dialog tersebut berisi detail data produk yang berhasil disimpan, ditampilkan menggunakan widget AlertDialog. Setelah dialog ditutup, form akan direset dengan memanggil _formKey.currentState!.reset(), mengosongkan semua input untuk mempersiapkan input berikutnya. Kode ini memperlihatkan bagaimana Flutter memanfaatkan fitur form bawaan untuk membuat proses input yang aman, terstruktur, dan interaktif dengan umpan balik yang jelas kepada pengguna.
+
+### 2. Mengarahkan pengguna ke halaman form tambah item ketika menekan tombol "Tambah Item"
+Untuk mengarahkan pengguna ke halaman form tambah item ketika tombol "Tambah Produk" ditekan, kode ini memanfaatkan Navigator.push() pada widget yang berinteraksi dengan pengguna. Navigasi ke halaman formulir dilakukan dengan memeriksa nilai routeKey dari ItemHomepage. Jika routeKey memiliki nilai 'addProduct', kode akan memanggil Navigator.push() untuk membuka halaman ProductEntryFormPage.
+
+Komponen utama yang menangani klik pada item adalah ItemCard. ItemCard dilengkapi dengan GestureDetector yang menangkap event klik dan memanggil fungsi onTap. Fungsi ini memeriksa apakah item yang ditekan memiliki routeKey yang sesuai untuk menavigasi ke halaman form. Dalam hal ini, jika tombol "Tambah Produk" ditekan, pengguna diarahkan ke halaman ProductEntryFormPage dengan menggunakan MaterialPageRoute. Pendekatan ini menjaga navigasi tetap modular dan memisahkan logika navigasi dari elemen presentasi, memungkinkan alur yang lebih bersih dan terorganisir dalam aplikasi.
+
+
+### 3. Memunculkan data sesuai isi dari formulir yang diisi dalam sebuah pop up setelah menekan tombol Save
+Kode ini utamanya terdapat di file `productentry_form.dart`. Kode ini berfokus pada memunculkan data yang diisi dalam formulir sebagai pop-up (dialog) setelah pengguna menekan tombol "Save" dan semua data berhasil divalidasi. Formulir terdiri dari tiga input utama: nama produk (_nama), deskripsi produk (_description), dan harga produk (_price). Setelah pengguna mengisi semua data dan menekan tombol "Save", kode memeriksa apakah semua input valid menggunakan _formKey.currentState!.validate().
+
+Jika validasi berhasil, showDialog() akan dipanggil untuk menampilkan sebuah AlertDialog. Dialog ini berfungsi sebagai pop-up yang menampilkan data yang telah diisi pengguna dalam formulir, termasuk nama produk, deskripsi, dan harga. Informasi tersebut ditampilkan di dalam widget Column yang disusun secara vertikal untuk menunjukkan rincian produk. Tombol "OK" pada dialog memungkinkan pengguna untuk menutup dialog dan secara otomatis mereset formulir menggunakan _formKey.currentState!.reset().
+
+Dengan pendekatan ini, kode memberikan umpan balik langsung kepada pengguna tentang data yang telah diisi dan memastikan pengguna mendapatkan konfirmasi bahwa data telah berhasil dimasukkan sebelum kembali ke tampilan awal atau mengisi data baru. Hal ini meningkatkan pengalaman pengguna dengan memberi kepastian atas tindakan yang mereka lakukan.
+
+
+### 4. Membuat sebuah drawer pada aplikasi (min memiliki dua buah opsi, "halaman utama" dan "tambah item")
+Bagian ini terletak pada file left_drawer.dart. Kode ini membangun sebuah drawer pada aplikasi menggunakan widget Drawer di Flutter. Drawer berfungsi sebagai navigasi samping yang menyediakan opsi bagi pengguna untuk beralih ke halaman yang berbeda dengan cepat. Dalam hal ini, drawer memiliki dua opsi utama: "Halaman Utama" dan "Tambah Produk".
+
+Drawer diimplementasikan dengan ListView yang menampilkan item navigasi (ListTile). Bagian atas drawer ditandai dengan DrawerHeader yang menampilkan judul "Hobana Studio" beserta subteks deskriptif "Ayo belanja setiap hari disini!" yang dirancang untuk menarik perhatian pengguna. DrawerHeader memiliki latar belakang berwarna yang disesuaikan dengan skema warna utama aplikasi.
+
+Opsi pertama, "Halaman Utama", diwakili oleh ListTile dengan ikon rumah (Icons.home_outlined). Ketika opsi ini diklik, Navigator.pushReplacement digunakan untuk mengganti halaman saat ini dengan halaman beranda (MyHomePage). Navigator.pushReplacement memastikan bahwa halaman sebelumnya tidak tetap berada dalam tumpukan navigasi, memberikan pengalaman transisi yang bersih dan langsung.
+
+Opsi kedua, "Tambah Produk", memiliki ikon mood (Icons.mood) dan memungkinkan pengguna untuk menavigasi ke halaman formulir tambah produk (ProductEntryFormPage). Navigasi dilakukan dengan cara serupa, menggunakan Navigator.pushReplacement untuk mengganti halaman saat ini.
+
+Dengan desain ini, drawer berfungsi sebagai elemen navigasi yang ramah pengguna, menyediakan akses cepat ke fitur utama aplikasi dengan minimal dua opsi. Hal ini memastikan pengalaman pengguna yang terorganisir dan efisien dalam menjelajahi aplikasi.
+
+
+## Menjawab pertanyaan
+### 1. Apa kegunaan const di Flutter? Jelaskan apa keuntungan ketika menggunakan const pada kode Flutter. Kapan sebaiknya kita menggunakan const, dan kapan sebaiknya tidak digunakan?
+#### Kegunaan dann Keuntungan Penggunaan Const di Flutter
+- *Pengoptimalan performa*. Dengan menggunakan const, Flutter dapat menghindari pembuatan objek baru jika objek tersebut sudah ada. Ini berarti jika widget yang sama dengan nilai yang sama digunakan di berbagai tempat dalam widget tree, Flutter hanya akan menggambar satu instance objek tersebut.
+- *Memori yang efisien*. Karena objek const tidak dapat diubah, mereka dapat dibagikan dan digunakan ulang di berbagai tempat dalam aplikasi. Hal ini mengurangi penggunaan memori, karena tidak perlu membuat banyak instance dari objek yang sama.
+- *Lebih mudah dalam debugging*. Menandai objek sebagai const memberi tahu developer lain bahwa objek tersebut tidak akan berubah. Ini membantu dalam pemahaman kode dan debugging.
+
+#### Kapan sebaiknya menggunakan const?
+- Jika diketahui bahwa widget tersebut tidak akan berubah, seperti ikon statis atau teks yang tidak akan berubah, penggunaan const sangat dianjurkan.
+- Jika widget dihasilkan dari data yang tidak berubah (seperti daftar konstanta), const sangat baik untuk menggunakan 
+
+#### Kapan sebaiknya tidak menggunakan const?
+- Jika widget bergantung pada data yang dapat berubah, seperti hasil dari API atau input pengguna, sebaiknya tidak menggunakan const. Contoh kasus ini adalah:
+-  Jika widget digunakan dalam konteks yang bisa berubah (misalnya, dalam StatefulWidget), sebaiknya tidak menggunakan const pada widget tersebut.
+
+### 2. Jelaskan dan bandingkan penggunaan Column dan Row pada Flutter. Berikan contoh implementasi dari masing-masing layout widget ini!
+#### Column
+Widget Column digunakan untuk menyusun anak-anaknya dalam bentuk vertikal. Setiap anak akan ditata satu di atas yang lain. Keuntungannya:
+- Memungkinkan penempatan widget secara vertikal.
+- Bisa diatur agar anak-anaknya mengisi ruang yang tersedia dengan parameter seperti `mainAxisAlignment` dan `crossAxisAlignment`.
+Contoh implementasi:
+```
+Column(
+  mainAxisAlignment: MainAxisAlignment.center,
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: <Widget>[
+    Text('Hello'),
+    Text('World'),
+    ElevatedButton(onPressed: () {}, child: Text('Click Me')),
+  ],
+)
+```
+Pada contoh di atas, tiga widget (dua teks dan satu tombol) ditata secara vertikal, di tengah sumbu utama dan di sebelah kiri sumbu silang.
+
+#### Row
+Widget Row digunakan untuk menyusun anak-anaknya dalam bentuk horizontal. Setiap anak akan ditata satu di samping yang lain. Keuntungannya:
+- Memungkinkan penempatan widget secara horizontal.
+- Seperti Column, bisa diatur menggunakan parameter `mainAxisAlignment` dan `crossAxisAlignment`.
+Contoh
+```
+Row(
+  mainAxisAlignment: MainAxisAlignment.spaceAround,
+  crossAxisAlignment: CrossAxisAlignment.center,
+  children: <Widget>[
+    Icon(Icons.home),
+    Text('Home'),
+    ElevatedButton(onPressed: () {}, child: Text('Go')),
+  ],
+)
+```
+Di contoh ini, ada ikon, teks, dan tombol yang ditata secara horizontal. Semua widget berada di tengah sumbu silang dan memiliki jarak yang sama antar elemen.
+
+### 3. Sebutkan apa saja elemen input yang kamu gunakan pada halaman form yang kamu buat pada tugas kali ini. Apakah terdapat elemen input Flutter lain yang tidak kamu gunakan pada tugas ini? Jelaskan!
+Pada halaman form yang saya buat, elemen input yang digunakan adalah:
+
+- TextFormField untuk input nama produk (_nama).
+- TextFormField untuk input deskripsi produk (_description).
+- TextFormField untuk input harga produk (_price), dengan keyboardType yang disesuaikan agar hanya menerima input berupa angka.
+
+Elemen input lainnya dari Flutter yang tidak digunakan dalam tugas ini mencakup:
+- Checkbox: Untuk input nilai boolean (ya/tidak).
+- Switch: Berfungsi serupa dengan checkbox tetapi dengan gaya visual yang berbeda.
+- Radio Button: Untuk pilihan eksklusif dari beberapa opsi.
+- DropdownButton: Untuk memilih satu opsi dari menu dropdown.
+- Slider: Untuk input nilai numerik atau range dengan menggeser slider.
+
+Saya tidak menggunakan elemen-elemen ini karena fokus formulir adalah input teks untuk nama, deskripsi, dan angka untuk harga produk. Elemen-elemen seperti checkbox, radio button, atau dropdown dapat digunakan jika ada kebutuhan untuk memilih opsi dari sejumlah pilihan atau untuk pengaturan lainnya.
+
+### 4. Bagaimana cara kamu mengatur tema (theme) dalam aplikasi Flutter agar aplikasi yang dibuat konsisten? Apakah kamu mengimplementasikan tema pada aplikasi yang kamu buat?
+1.  Di dalam kelas MyApp, ThemeData diatur menggunakan colorScheme untuk menentukan skema warna. Kode berikut menunjukkan cara tema ditetapkan:
+```
+theme: ThemeData(
+  colorScheme: ColorScheme.fromSwatch(
+    primarySwatch: Colors.deepPurple,
+  ).copyWith(secondary: Colors.deepPurple[400]),
+),
+
+```
+2. Penggunaan Tema pada Komponen: Beberapa widget menggunakan tema ini untuk menjaga konsistensi warna di seluruh aplikasi, seperti AppBar, DrawerHeader, ElevatedButton, dan Card. Contoh penerapannya:
+```
+backgroundColor: Theme.of(context).colorScheme.primary,
+```
+```
+backgroundColor: MaterialStateProperty.all(Theme.of(context).colorScheme.primary),
+
+```
+3. Inheritan Tema. Setiap komponen menggunakan `Theme.of(context).colorScheme` untuk mengakses warna-warna dari tema yang telah ditetapkan di `main.dart`, memastikan bahwa perubahan pada `ThemeData` akan berlaku untuk semua elemen yang menggunakannya.
+
+Dengan cara ini, aplikasi secara konsisten mengikuti skema warna yang sama di semua halaman dan komponen, yang memberikan pengalaman visual yang seragam dan memudahkan pengelolaan warna jika ingin mengubah skema warna di masa depan.
+
+
+### 5. Bagaimana cara kamu menangani navigasi dalam aplikasi dengan banyak halaman pada Flutter?
+Pada aplikasi Flutter, navigasi antara halaman dapat ditangani dengan menggunakan kelas Navigator dan MaterialPageRoute. Berikut adalah cara menangani navigasi pada aplikasi dengan banyak halaman di Flutter:
+1. Menggunakan `Navigator.push` dan `Navigator.pushReplacement`. Navigator memungkinkan kita untuk menambahkan (push) halaman baru di atas halaman yang sedang aktif. `Navigator.pushReplacement` menggantikan halaman saat ini dengan halaman baru tanpa menambahkan halaman baru ke dalam tumpukan navigasi, sehingga tidak dapat kembali ke halaman sebelumnya. Contoh penggunaan:
+```
+onTap: () {
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(
+      builder: (context) => MyHomePage(),
+    ),
+  );
+},
+```
+
+2. Membuat Route pada `MaterialPageRoute`. `MaterialPageRoute` digunakan untuk mendefinisikan halaman baru yang akan ditampilkan. `builder` dalam `MaterialPageRoute` mendefinisikan widget yang akan dirender sebagai halaman baru; Contoh penggunaan:
+```
+Navigator.push(
+  context,
+  MaterialPageRoute(
+    builder: (context) => const ProductEntryFormPage(),
+  ),
+);
+```
+
+3. Navigasi Berdasarkan Kondisi: Pada ItemCard, ada navigasi yang ditentukan berdasarkan nama item. Contoh penggunaan:
+```
+if (item.name == "Tambah Produk") {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => const ProductEntryFormPage(),
+    ),
+  );
+}
+```
+</details>
