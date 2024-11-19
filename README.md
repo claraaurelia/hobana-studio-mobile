@@ -513,26 +513,45 @@ Kelas   : PBP C     <br>
 - Setelah sistem autentikasi dikembangkan di Django, lalu integrasikan dengan sistem autentikasi pada flutter
     - Hal yang dilakukan adalah emndownload package Flutter yang dapat dipakai untuk menyambung ke web service Django (yang sudah disediakan)
      `flutter pub add provider`
-### 2. Membuat model kustom sesuai dengan proyek aplikasi Django.
+
+### 2. Membuat model kustom sesuai dengan proyek aplikasi Django. 
+- Saya mengikuti model yang sudah ditetapkan pada proyek Django sebelumnya dan memastikan menyimpan informasi yan gsama yaitu product_name, product_price, serta product_descriptioin. Model kustom ini akan digunakan untuk menyimpan data produk. Hal ini digunakan pada productentry_form.dart dan product_entry.dart
 
 
-### 3. Memunculkan 
-
-
-### 4. Membuat 
+### 3. Membuat halaman yang berisi daftar semua item yang terdapat pada JSON dan membuat halaman detail untuk setiap item, serta melakukan filter pada halamand aftar item dengan hanya menampilkan item yang terasosiasi dengan pengguna yang sedang log in
+- Pada Django, sudah ditetapkan di function show_json yang sudah disesuaikan dengan user tertentu yang bersangkutan.
+- Pada Flutter di page product_detail.dart juga dmenjadi halaman detail untuk setiap item, dimana setiap item dapat ditekan dan user akan didirect ke page detail product dan terdapat juga tombol untuk kembali ke page sebelumnya. Karena atribut dari produk aplikasi ini adalah nama, harga, dan deskripsi, maka ketiga atribut ini lah yang dimunculkan
 
 
 ## Menjawab pertanyaan
 ### 1. Jelaskan mengapa kita perlu membuat model untuk melakukan pengambilan ataupun pengiriman data JSON? Apakah akan terjadi error jika kita tidak membuat model terlebih dahulu?
+-  Membuat model di Django sangat penting untuk pengambilan dan pengiriman data JSON karena model berfungsi sebagai struktur yang mendefinisikan bagaimana data disimpan di database dan bagaimana data tersebut dikirimkan atau diterima dalam format JSON. Dengan menggunakan model, kita dapat dengan mudah memetakan data ke dalam JSON menggunakan Django's serializers, serta memvalidasi dan mengelola data dengan cara yang konsisten. 
+Tanpa model, kita akan kesulitan dalam menyimpan, mengambil, dan memvalidasi data secara efisien, serta berisiko mengirimkan atau menerima data yang tidak terstruktur dengan baik, yang dapat menyebabkan inkonsistensi dan kesalahan. Selain itu, model juga memudahkan pengelolaan relasi antar entitas yang ada di aplikasi, seperti menghubungkan produk dengan pengguna. Oleh karena itu, meskipun tidak selalu langsung menyebabkan error, tidak menggunakan model akan membuat pengelolaan data menjadi lebih rumit dan rentan terhadap kesalahan.
 
 
 
 ### 2. Jelaskan fungsi dari library http yang sudah kamu implementasikan pada tugas ini
+- Library http yang diimplementasikan dalam tugas ini berfungsi untuk melakukan komunikasi HTTP antara aplikasi Flutter dengan backend Django. Fungsi utama dari library ini adalah untuk mengirimkan permintaan HTTP (seperti GET, POST, PUT, DELETE) ke server dan menerima respons dari server.
+
+    Pada tugas ini, kita menggunakan HTTP POST untuk mengirimkan data, seperti data produk yang dimasukkan oleh pengguna, ke server Django. Misalnya, saat pengguna mendaftar, login, atau menambahkan produk baru, aplikasi Flutter mengirimkan data dalam format JSON ke backend menggunakan http.post(). Selain itu, library ini juga digunakan untuk melakukan permintaan GET ke server untuk mengambil data produk yang ada di database Django, misalnya saat menampilkan daftar produk di aplikasi Flutter.
+
+    Dengan library ini, aplikasi Flutter dapat berkomunikasi dengan backend Django, mengirimkan data dari frontend, dan menerima data dari backend secara mudah dan efisien. Library http juga memungkinkan kita untuk menangani respons yang diterima dari server, seperti status kode, data JSON, dan pesan kesalahan, yang memungkinkan aplikasi untuk memberikan feedback yang sesuai kepada pengguna.
 
 ### 3. Jelaskan fungsi dari CookieRequest dan jelaskan mengapa instance CookieRequest perlu untuk dibagikan ke semua komponen di aplikasi Flutter.
+- CookieRequest berfungsi untuk menangani permintaan HTTP di Flutter dengan mengelola cookie yang digunakan untuk autentikasi dan sesi pengguna. Cookie ini memungkinkan aplikasi untuk mengirimkan data sesi (seperti token login) pada setiap permintaan HTTP ke backend Django, tanpa perlu login ulang. Dengan menggunakan CookieRequest, aplikasi dapat menjaga konsistensi autentikasi pengguna di seluruh aplikasi, memudahkan pengelolaan sesi, dan memastikan bahwa setiap permintaan dari berbagai komponen aplikasi menggunakan informasi yang sama.
+
+    Membagikan instance CookieRequest ke seluruh aplikasi penting untuk menjaga akses yang konsisten terhadap sesi pengguna. Hal ini memastikan bahwa setiap halaman atau komponen yang membutuhkan autentikasi (misalnya, untuk mengambil data atau menambahkan produk) dapat menggunakan cookie yang relevan, menghindari masalah seperti logout yang tidak diinginkan atau permintaan yang gagal karena kehilangan sesi. Menggunakan state management seperti Provider memungkinkan pengelolaan dan pembagian CookieRequest secara efisien di seluruh aplikasi.
+
 
 ### 4. Jelaskan mekanisme pengiriman data mulai dari input hingga dapat ditampilkan pada Flutter.
-
+- Pada Flutter, data pertamakali dikumpulkan melalui widget formulir. Ketika user memasukkan data, maka data tersebut kana disimpan dalam variabel lokal (_nama, _price, _description) ketika tombol submit ditekan
+- Setelah dimasukkan, Flutter akan mengirimkan data tersebut ke backed menggunakan permintaan HTTP. Menggunakan library seperti http atau pbp_django_auth, aplikasi Flutter mengirim data ke server dengan menggunakan metode POST. Data yang dikirim biasanya dalam format JSON, yang memudahkan pengolahan di server.
+- Di sisi server, Django menerima data tersebut dan memprosesnya. Data akan dipetakan ke dalam model yang sesuai (misalnya, model ProductEntry), dan kemudian disimpan ke dalam database. Setelah data berhasil disimpan, Django akan mengirimkan respons kembali ke Flutter, biasanya berupa pesan konfirmasi atau data yang diminta, dalam format JSON.
+- Setelah menerima respons dari server, aplikasi Flutter memproses data tersebut (misalnya, untuk konfirmasi atau menampilkan produk yang baru saja ditambahkan). Respons yang diterima akan diubah menjadi objek Dart menggunakan deserialisasi JSON. Data ini kemudian disimpan dalam state atau provider untuk ditampilkan ke pengguna.
 
 ### 5. Jelaskan mekanisme autentikasi dari login, register, hingga logout. Mulai dari input data akun pada Flutter ke Django hingga selesainya proses autentikasi oleh Django dan tampilnya menu pada Flutter.
+- Mekanisme autentikasi dimulai dengan pengguna memasukkan data akun pada halaman login atau registrasi di Flutter. Saat pengguna mengisi formulir, data seperti username dan password akan dikirimkan ke server Django menggunakan permintaan HTTP POST. Pada proses registrasi, Django akan memeriksa apakah username sudah terdaftar dan apakah password yang dimasukkan valid, kemudian membuat akun pengguna baru jika semuanya valid.
+- Setelah itu, aplikasi Flutter akan menerima respons dari Django yang mengindikasikan bahwa akun berhasil dibuat atau jika terjadi kesalahan. Pada proses login, data login (username dan password) dikirimkan ke Django, yang kemudian memverifikasi kredensial tersebut menggunakan authenticate() dan jika valid, Django akan mengautentikasi pengguna dengan auth_login().
+- Jika berhasil, Django akan mengirimkan respons berisi status login dan informasi pengguna (seperti username) yang kemudian disimpan di Flutter, biasanya dalam bentuk cookie atau token. Setelah login berhasil, aplikasi Flutter akan menampilkan menu atau tampilan utama yang sesuai dengan status pengguna yang terautentikasi. Untuk logout, ketika pengguna menekan tombol logout, aplikasi Flutter akan mengirimkan permintaan logout ke Django, yang kemudian menghapus sesi pengguna menggunakan auth_logout(), dan aplikasi Flutter akan menampilkan halaman login lagi. Seluruh proses ini memastikan bahwa hanya pengguna yang terautentikasi yang dapat mengakses fitur atau menu tertentu di aplikasi.
+
 </details>
