@@ -441,3 +441,98 @@ if (item.name == "Tambah Produk") {
 }
 ```
 </details>
+
+<details>
+<summary> Tugas Individu 9: Integrasi Layanan Web Django dengan Aplikasi Flutter </summary>
+Nama    : Clara Aurelia Setiady <br>
+NPM     : 2306217304 <br>
+Kelas   : PBP C     <br>
+
+## Proses implementasi Checklist
+### 1. Mengimplementasikan fitur registrasi akun pada proyek tugas Flutter, membuat halaman login pada proyek flutter, dan mengintegrasikan sistem autentikasi django dengan proyek tugas Flutter
+#### Kode ini memodifikasi proyek Django dan proyek Flutter. Terdapat aplikasi baru yaitu autentikasi pada proyek Django yang nantinya akan diintegrasikan dengan proyek Flutter. Backend terdapat pada proyek Django
+- Hal pertama yang dilakukan adalah set up autentikasi pada Django setelah itu mengintegrasikannya dengan proyek Flutter, dengan membuat aplikasi baru di proyek Django  bernama `authentication` dan tidak lupa melakukan beberapa steps yang mengikutinya (seperti menambahkan ke INSTALLED_APPS)
+    - Setelah itu tidak lupa install `pip install django-cors-headers` yang akan mengizinkan akses antar domain. Tambahkan `corsheaders` ke INSTALLED_APPS dan tambahkan `corsheaders.middleware.CorsMiddleware` ke MIDDELWARE
+    - tambahkan beberapa variabel perizinan di `settings.py` dan tambahkan 10.0.2.2 ke ALLOWED_HOSTS untuk emulator Android
+    ```
+    ...
+    CORS_ALLOW_ALL_ORIGINS = True
+    CORS_ALLOW_CREDENTIALS = True
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SAMESITE = 'None'
+    SESSION_COOKIE_SAMESITE = 'None'
+    ...
+    ```
+    - Pada proyek Django tersebut, tambahkan metode view untuk login di `authentication/views.py`
+    ```
+    from django.contrib.auth import authenticate, login as auth_login
+    from django.http import JsonResponse
+    from django.views.decorators.csrf import csrf_exempt
+
+    @csrf_exempt
+    def login(request):
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            if user.is_active:
+                auth_login(request, user)
+                # Status login sukses.
+                return JsonResponse({
+                    "username": user.username,
+                    "status": True,
+                    "message": "Login sukses!"
+                    # Tambahkan data lainnya jika ingin mengirim data ke Flutter.
+                }, status=200)
+            else:
+                return JsonResponse({
+                    "status": False,
+                    "message": "Login gagal, akun dinonaktifkan."
+                }, status=401)
+
+        else:
+            return JsonResponse({
+                "status": False,
+                "message": "Login gagal, periksa kembali email atau kata sandi."
+            }, status=401)
+    ```
+
+    - Setelah itu buat file `urls.py` pada folder auth dan tambahkan routing
+    ```
+    from django.urls import path
+    from authentication.views import login
+
+    app_name = 'authentication'
+
+    urlpatterns = [
+        path('login/', login, name='login'),
+    ]
+    ```
+    - Pada urls proyek root tambahkan `path('auth/', include('authentication.urls'))`
+- Setelah sistem autentikasi dikembangkan di Django, lalu integrasikan dengan sistem autentikasi pada flutter
+    - Hal yang dilakukan adalah emndownload package Flutter yang dapat dipakai untuk menyambung ke web service Django (yang sudah disediakan)
+     `flutter pub add provider`
+### 2. Membuat model kustom sesuai dengan proyek aplikasi Django.
+
+
+### 3. Memunculkan 
+
+
+### 4. Membuat 
+
+
+## Menjawab pertanyaan
+### 1. Jelaskan mengapa kita perlu membuat model untuk melakukan pengambilan ataupun pengiriman data JSON? Apakah akan terjadi error jika kita tidak membuat model terlebih dahulu?
+
+
+
+### 2. Jelaskan fungsi dari library http yang sudah kamu implementasikan pada tugas ini
+
+### 3. Jelaskan fungsi dari CookieRequest dan jelaskan mengapa instance CookieRequest perlu untuk dibagikan ke semua komponen di aplikasi Flutter.
+
+### 4. Jelaskan mekanisme pengiriman data mulai dari input hingga dapat ditampilkan pada Flutter.
+
+
+### 5. Jelaskan mekanisme autentikasi dari login, register, hingga logout. Mulai dari input data akun pada Flutter ke Django hingga selesainya proses autentikasi oleh Django dan tampilnya menu pada Flutter.
+</details>
